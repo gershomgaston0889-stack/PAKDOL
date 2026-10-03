@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#073b82">
+<title>PAKDOL COURT MANAGER</title>
+<style>
+:root{
+  --blue:#073b82;--blue2:#0d5ec7;--green:#20a64a;--yellow:#ffd400;
+  --red:#e51d2a;--bg:#eef3f9;--white:#fff;--ink:#15233b;--muted:#60708a;
+  --line:#d5ddea;--orange:#f59e0b;--teal:#078b8b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:1400px;margin:auto;padding:10px}
+header{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border-radius:18px;padding:15px;text-align:center;box-shadow:0 4px 16px #073b8222}
+header h1{margin:0;font-size:27px;letter-spacing:.3px}
+header p{margin:5px 0 0;font-weight:800}
+.nav{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin:10px 0}
+.nav button{min-height:48px;border:0;border-radius:11px;background:#fff;color:var(--blue);font-weight:900;border:1px solid var(--line)}
+.nav button.active{background:var(--blue);color:#fff}
+.page{display:none}.page.active{display:block}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.btn{border:0;border-radius:10px;padding:11px 14px;min-height:44px;font-weight:900}
+.blue{background:var(--blue);color:#fff}.green{background:var(--green);color:#fff}
+.yellow{background:var(--yellow);color:#17315f}.red{background:var(--red);color:#fff}
+.white{background:#fff;color:var(--blue);border:1px solid var(--line)}
+.teal{background:var(--teal);color:#fff}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px}
+.panel h2,.panel h3{margin:0 0 10px;color:var(--blue)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px}
+.card .label{font-size:12px;color:var(--muted);font-weight:900;text-transform:uppercase}
+.card .value{font-size:25px;font-weight:900;margin-top:4px}
+.card.bluecard{border-top:5px solid var(--blue)}.card.greencard{border-top:5px solid var(--green)}
+.card.yellowcard{border-top:5px solid var(--yellow)}.card.redcard{border-top:5px solid var(--red)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.full{grid-column:1/-1}
+.field label{font-size:12px;font-weight:900;color:var(--muted)}
+.field input,.field select,.field textarea{
+  width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:11px;background:#fff;outline:none
+}
+.field textarea{min-height:80px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 2px #0d5ec722}
+.tablewrap{overflow:auto}
+table{width:100%;border-collapse:separate;border-spacing:4px;min-width:720px}
+th{background:var(--blue);color:#fff;padding:9px 6px;font-size:12px;border-radius:7px;text-align:left}
+td{padding:8px 6px;border-bottom:1px solid #e5eaf1;font-size:13px;background:#fff}
+.status{display:inline-block;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900}
+.s-available{background:#fff;border:1px solid #aeb9c9;color:#33445f}
+.s-open{background:#d9f5df;color:#12672d}.s-reserved{background:#fff1a8;color:#765900}
+.s-booked{background:#ffd6da;color:#9b111a}.s-paid{background:#d9f5df;color:#12672d}
+.s-partial{background:#fff1a8;color:#765900}.s-unpaid{background:#ffd6da;color:#9b111a}
+.schedulebar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.schedulebar .datebox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-weight:900}
+.schedulebar input{border:0;font-weight:900;outline:0}
+.viewtoggle{display:flex;gap:4px;background:#e5ebf4;padding:4px;border-radius:10px}
+.viewtoggle button{border:0;border-radius:8px;padding:8px 12px;font-weight:900;background:transparent;color:var(--blue)}
+.viewtoggle button.active{background:#fff;box-shadow:0 1px 4px #0002}
+.weekwrap{overflow:auto}
+.weektable{min-width:920px;border-spacing:3px}
+.weektable th{text-align:center;position:sticky;top:0;z-index:2}
+.weektable td.time{background:#e9eff7;font-weight:900;text-align:center;white-space:nowrap;border-radius:7px}
+.slotbtn{width:100%;min-height:66px;border-radius:8px;border:2px solid #cbd5e1;background:#fff;padding:4px;color:#33445f;font-weight:900;font-size:10px}
+.slotbtn.open{background:#d9f5df;border-color:#25a34a;color:#12672d}
+.slotbtn.reserved{background:#fff1a8;border-color:#e0b900;color:#765900}
+.slotbtn.booked{background:#ffd6da;border-color:#e51d2a;color:#9b111a}
+.slotbtn small{display:block;font-size:9px;margin-top:3px}
+.daylist{display:grid;gap:7px}
+.dayslot{display:grid;grid-template-columns:100px 1fr auto;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:11px;padding:8px}
+.dayslot .tm{font-weight:900;color:var(--blue)}
+.slotmain{min-width:0}.slotmain b{display:block}.slotmain small{color:var(--muted)}
+.actionrow{display:flex;gap:6px;flex-wrap:wrap}
+.mini{padding:7px 9px;min-height:34px;border-radius:8px;font-size:11px}
+.empty{padding:18px;text-align:center;color:var(--muted);font-weight:800}
+.modal{display:none;position:fixed;inset:0;background:#0008;align-items:center;justify-content:center;padding:12px;z-index:50}
+.modal.show{display:flex}
+.dialog{background:#fff;border-radius:17px;padding:17px;width:min(560px,100%);max-height:92vh;overflow:auto}
+.dialog h2{margin:0;color:var(--blue)}
+.dialog .sub{font-weight:800;color:var(--muted);margin:4px 0 13px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#15233b;color:#fff;padding:11px 16px;border-radius:999px;font-weight:900;display:none;z-index:100}
+.toast.show{display:block}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;font-weight:900;margin:7px 0}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block;vertical-align:-1px}
+.statline{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid #e8edf4}
+.statline:last-child{border-bottom:0}
+.playerrow{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid #e8edf4}
+.progress{height:12px;background:#e7edf4;border-radius:99px;overflow:hidden}.progress>div{height:100%;background:var(--green)}
+.notice{background:#fff7d6;border:1px solid #e6c100;border-radius:10px;padding:9px;font-size:12px;font-weight:800}
+.smallmuted{font-size:11px;color:var(--muted);font-weight:700}
+.printonly{display:none}
+@media(max-width:850px){
+ .nav{grid-template-columns:repeat(3,1fr)}
+ .cards{grid-template-columns:repeat(2,1fr)}
+ .grid2,.grid3,.formgrid{grid-template-columns:1fr}
+ .dayslot{grid-template-columns:78px 1fr}
+ .dayslot .actionrow{grid-column:1/-1}
+}
+@media(max-width:560px){
+ .app{padding:6px}header h1{font-size:22px}.nav{gap:5px}.nav button{font-size:11px;padding:7px}
+ .cards{gap:6px}.card{padding:10px}.card .value{font-size:21px}
+ .toolbar{gap:5px}.btn{padding:9px 10px;font-size:12px}
+}
+@media print{
+ body{background:#fff}.app{max-width:none;padding:0}
+ header,.nav,.toolbar,.no-print{display:none!important}
+ .page{display:none!important}.page.print-page{display:block!important}
+ .panel{border:0;box-shadow:none}.printonly{display:block}
+}
+</style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pakdol Court">
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>PAKDOL COURT MANAGER</h1>
+  <p>Schedule • Bookings • Open Play • Payments</p>
+</header>
+
+<nav class="nav no-print" id="nav">
+  <button data-page="dashboard">🏠 Dashboard</button>
+  <button data-page="schedule">📅 Schedule</button>
+  <button data-page="bookings">📋 Bookings</button>
+  <button data-page="openplay">🏓 Open Play</button>
+  <button data-page="customers">👥 Customers</button>
+  <button data-page="reports">💰 Payments</button>
+</nav>
+
+<section id="dashboard" class="page active">
+  <div class="toolbar no-print">
+    <button class="green btn" onclick="newBooking()">＋ Quick Book</button>
+    <button class="blue btn" onclick="showPage('schedule')">View Schedule</button>
+    <button class="yellow btn" onclick="showPage('openplay')">Open Play</button>
+    <button class="white btn" onclick="backupData()">Export Backup</button>
+    <button class="white btn" onclick="document.getElementById('restoreFile').click()">Import Backup</button>
+    <input id="restoreFile" type="file" accept=".json" hidden onchange="restoreData(event)">
+  </div>
+  <div class="cards">
+    <div class="card bluecard"><div class="label">Today's bookings</div><div class="value" id="dBookings">0</div></div>
+    <div class="card greencard"><div class="label">Today's expected</div><div class="value" id="dExpected">₱0</div></div>
+    <div class="card yellowcard"><div class="label">Today's collected</div><div class="value" id="dCollected">₱0</div></div>
+    <div class="card redcard"><div class="label">Today's balance</div><div class="value" id="dBalance">₱0</div></div>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="panel">
+      <h2>Today's Court</h2>
+      <div id="todayList"></div>
+    </div>
+    <div class="panel">
+      <h2>Quick Summary</h2>
+      <div class="statline"><b>Open Play players</b><span id="dPlayers">0</span></div>
+      <div class="statline"><b>Reserved slots</b><span id="dReserved">0</span></div>
+      <div class="statline"><b>Booked slots</b><span id="dBookedSlots">0</span></div>
+      <div class="statline"><b>Unpaid / partial</b><span id="dUnpaid">0</span></div>
+      <div class="notice" style="margin-top:10px">Tip: tap any schedule slot to edit the booking, payment, notes, or customer details.</div>
+    </div>
+  </div>
+</section>
+
+<section id="schedule" class="page">
+  <div class="toolbar no-print">
+    <button class="white btn" onclick="shiftDate(-1)">← Day</button>
+    <div class="datebox">📅 <input id="scheduleDate" type="date"></div>
+    <button class="white btn" onclick="setToday()">Today</button>
+    <button class="white btn" onclick="shiftDate(1)">Day →</button>
+    <div class="viewtoggle">
+      <button id="dayViewBtn" class="active" onclick="setScheduleView('day')">DAY</button>
+      <button id="weekViewBtn" onclick="setScheduleView('week')">WEEK</button>
+    </div>
+    <button class="green btn" onclick="newBooking()">＋ Quick Book</button>
+    <button class="blue btn" onclick="printSchedule()">🖨 Print</button>
+    <button class="yellow btn" onclick="saveScheduleImage()">Save Image</button>
+     <button class="green btn" onclick="saveWeeklyScheduleImage()">Save Week Image</button>
+  </div>
+  <div class="panel">
+    <h2 id="scheduleHeading">Today's Schedule</h2>
+    <div class="legend">
+      <span>⚪ Available</span><span>🟢 Open Play</span><span>🟡 Reserved</span><span>🔴 Booked</span>
+    </div>
+    <div id="daySchedule"></div>
+    <div id="weekSchedule" style="display:none"></div>
+  </div>
+</section>
+
+<section id="bookings" class="page">
+  <div class="toolbar no-print">
+    <button class="green btn" onclick="newBooking()">＋ New Booking</button>
+    <select id="bookingFilter" class="btn white" onchange="renderBookings()">
+      <option value="all">All Bookings</option><option value="booked">Booked</option><option value="reserved">Reserved</option>
+      <option value="unpaid">Unpaid</option><option value="partial">Partial Payment</option><option value="paid">Fully Paid</option>
+    </select>
+    <input id="bookingSearch" class="btn white" style="min-width:220px" placeholder="🔍 Search customer..." oninput="renderBookings()">
+    <button class="white btn" onclick="printBookings()">🖨 Print</button>
+  </div>
+  <div class="panel">
+    <h2>Bookings</h2>
+    <div class="tablewrap"><table id="bookingTable"></table></div>
+  </div>
+</section>
+
+<section id="openplay" class="page">
+  <div class="toolbar no-print">
+    <button class="green btn" onclick="newOpenPlay()">＋ New Open Play</button>
+    <button class="blue btn" onclick="showPage('schedule')">Schedule</button>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <h2>Open Play Sessions</h2>
+      <div id="openplayList"></div>
+    </div>
+    <div class="panel">
+      <h2>Selected Session</h2>
+      <div id="openplayDetail"><div class="empty">Select an Open Play session.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="customers" class="page">
+  <div class="toolbar no-print">
+    <input id="customerSearch" class="btn white" style="min-width:240px" placeholder="🔍 Search customers..." oninput="renderCustomers()">
+  </div>
+  <div class="panel">
+    <h2>Customers</h2>
+    <div class="tablewrap"><table id="customerTable"></table></div>
+  </div>
+</section>
+
+<section id="reports" class="page">
+  <div class="toolbar no-print">
+    <button class="white btn" onclick="backupData()">Export Backup</button>
+    <button class="white btn" onclick="printReports()">🖨 Print Report</button>
+  </div>
+  <div class="cards">
+    <div class="card bluecard"><div class="label">Expected revenue</div><div class="value" id="rExpected">₱0</div></div>
+    <div class="card greencard"><div class="label">Collected</div><div class="value" id="rCollected">₱0</div></div>
+    <div class="card redcard"><div class="label">Outstanding</div><div class="value" id="rBalance">₱0</div></div>
+    <div class="card yellowcard"><div class="label">Bookings</div><div class="value" id="rBookings">0</div></div>
+  </div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="panel"><h2>Payment Status</h2><div id="paymentSummary"></div></div>
+    <div class="panel"><h2>Revenue by Month</h2><div id="monthlySummary"></div></div>
+  </div>
+</section>
+
+<div id="bookingModal" class="modal">
+ <div class="dialog">
+  <h2 id="bookingModalTitle">New Booking</h2>
+  <div class="sub" id="bookingModalSub"></div>
+  <div class="formgrid">
+   <div class="field"><label>Date</label><input id="bDate" type="date"></div>
+   <div class="field"><label>Start Time</label><select id="bStart"></select></div>
+   <div class="field"><label>Duration</label><select id="bDuration"><option value="1">1 hour</option><option value="2">2 hours</option><option value="3">3 hours</option><option value="4">4 hours</option><option value="5">5 hours</option></select></div>
+   <div class="field"><label>Status</label><select id="bStatus"><option value="booked">Booked</option><option value="reserved">Reserved</option></select></div>
+   <div class="field"><label>Customer Name</label><input id="bName" placeholder="Enter customer name"></div>
+   <div class="field"><label>Phone</label><input id="bPhone" inputmode="tel" placeholder="09XX XXX XXXX"></div>
+   <div class="field"><label>Rate / Hour</label><input id="bRate" type="number" min="0" step="10"></div>
+   <div class="field"><label>Total Due</label><input id="bDue" type="number" min="0" step="1"></div>
+   <div class="field"><label>Amount Paid</label><input id="bPaid" type="number" min="0" step="1" value="0"></div>
+   <div class="field"><label>Payment Method</label><select id="bMethod"><option>Cash</option><option>GCash</option><option>Bank Transfer</option><option>Other</option></select></div>
+   <div class="field full"><label>Notes</label><textarea id="bNotes" placeholder="e.g. 50% deposit, fully paid, special request..."></textarea></div>
+  </div>
+  <div class="notice" style="margin:10px 0">Balance: <b id="bBalance">₱0</b></div>
+  <div class="actionrow">
+   <button class="green btn" onclick="saveBooking()">SAVE BOOKING</button>
+   <button class="white btn" onclick="closeModal('bookingModal')">Cancel</button>
+   <button id="deleteBookingBtn" class="red btn" onclick="deleteBooking()" style="display:none">Delete</button>
+  </div>
+ </div>
+</div>
+
+<div id="openModal" class="modal">
+ <div class="dialog">
+  <h2>New Open Play</h2><div class="sub">Create a session and manage its players.</div>
+  <div class="formgrid">
+   <div class="field"><label>Date</label><input id="oDate" type="date"></div>
+   <div class="field"><label>Start Time</label><select id="oStart"></select></div>
+   <div class="field"><label>End Time</label><select id="oEnd"></select></div>
+   <div class="field"><label>Player Capacity</label><input id="oCap" type="number" value="20" min="1"></div>
+   <div class="field"><label>Price / Player</label><input id="oPrice" type="number" value="100" min="0"></div>
+   <div class="field full"><label>Notes</label><textarea id="oNotes" placeholder="Optional session notes"></textarea></div>
+  </div>
+  <div class="actionrow">
+   <button class="green btn" onclick="saveOpenPlay()">CREATE SESSION</button>
+   <button class="white btn" onclick="closeModal('openModal')">Cancel</button>
+  </div>
+ </div>
+</div>
+
+<div id="playerModal" class="modal">
+ <div class="dialog">
+  <h2>Add Open Play Player</h2><div class="sub" id="playerSub"></div>
+  <div class="formgrid">
+   <div class="field"><label>Player Name</label><input id="pName" placeholder="Enter player name"></div>
+   <div class="field"><label>Phone</label><input id="pPhone" placeholder="09XX XXX XXXX"></div>
+   <div class="field"><label>Amount Paid</label><input id="pPaid" type="number" value="100" min="0"></div>
+   <div class="field"><label>Payment Method</label><select id="pMethod"><option>Cash</option><option>GCash</option><option>Bank Transfer</option><option>Other</option></select></div>
+  </div>
+  <div class="actionrow">
+   <button class="green btn" onclick="savePlayer()">ADD PLAYER</button>
+   <button class="white btn" onclick="closeModal('playerModal')">Cancel</button>
+  </div>
+ </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+(() => {
+const KEY='pakdol_manager_v2';
+const HOURS=Array.from({length:17},(_,i)=>i+6); // 6 AM through 10 PM
+const defaultSettings={dayRate:380,eveningRate:450,weekendRate:450,openPlayRate:100};
+let db=loadDB(), editingId=null, selectedOpenId=null, selectedPlayerSession=null, scheduleView='day';
+
+function emptyDB(){return {version:2,settings:{...defaultSettings},bookings:{},openplays:{},customers:{}}}
+function loadDB(){try{const x=JSON.parse(localStorage.getItem(KEY));return x&&x.version===2?x:emptyDB()}catch(e){return emptyDB()}}
+function saveDB(){localStorage.setItem(KEY,JSON.stringify(db))}
+function uid(prefix='PKD'){return prefix+'-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase()}
+function pad(n){return String(n).padStart(2,'0')}
+function today(){const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function fmtDate(s){if(!s)return '';return new Date(s+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}
+function fmtShort(s){if(!s)return '';return new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}
+function time(h){return `${h%12||12}:00 ${h>=12?'PM':'AM'}`}
+function money(n){return '₱'+Number(n||0).toLocaleString('en-PH',{maximumFractionDigits:0})}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function dateAdd(s,n){const d=new Date(s+'T00:00:00');d.setDate(d.getDate()+n);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function dayOfWeek(s){return new Date(s+'T00:00:00').getDay()}
+function defaultRate(date,start){const dow=dayOfWeek(date);if(dow===0||dow===6)return db.settings.weekendRate;return start>=17?db.settings.eveningRate:db.settings.dayRate}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+function showPage(id){
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===id));
+ if(id==='dashboard')renderDashboard();
+ if(id==='schedule')renderSchedule();
+ if(id==='bookings')renderBookings();
+ if(id==='openplay')renderOpenPlay();
+ if(id==='customers')renderCustomers();
+ if(id==='reports')renderReports();
+}
+window.showPage=showPage;
+
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+
+function bookingStatusClass(b){return b.status==='booked'?'s-booked':'s-reserved'}
+function paymentState(b){const due=Number(b.due||0),paid=Number(b.paid||0);if(due<=0||paid<=0)return 'unpaid';if(paid>=due)return 'paid';return 'partial'}
+function paymentClass(p){return p==='paid'?'s-paid':p==='partial'?'s-partial':'s-unpaid'}
+function allBookings(){return Object.values(db.bookings).sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start))}
+function occupied(date,start,end,ignoreId=null){
+ return allBookings().some(b=>b.id!==ignoreId&&b.date===date&&b.start<end&&b.end>start)
+}
+function slotsForBooking(b){
+ const out=[];for(let h=b.start;h<b.end;h++)out.push(h);return out
+}
+function bookingForSlot(date,h){return allBookings().find(b=>b.date===date&&b.start<=h&&b.end>h)}
+function openPlayForSlot(date,h){return Object.values(db.openplays).find(o=>o.date===date&&o.start<=h&&o.end>h)}
+function bookingLabel(b){
+ const pay=paymentState(b);
+ return `<span class="status ${bookingStatusClass(b)}">${b.status.toUpperCase()}</span>
+ <span class="status ${paymentClass(pay)}">${pay.toUpperCase()}</span>`
+}
+
+function renderDashboard(){
+ const d=today(), bs=allBookings().filter(b=>b.date===d);
+ let expected=0,collected=0,balance=0,reserved=0,bookedSlots=0,unpaid=0,players=0;
+ bs.forEach(b=>{expected+=Number(b.due||0);collected+=Number(b.paid||0);balance+=Math.max(0,Number(b.due||0)-Number(b.paid||0));if(b.status==='reserved')reserved++;if(b.status==='booked')bookedSlots+=b.end-b.start;if(paymentState(b)!=='paid')unpaid++});
+ Object.values(db.openplays).filter(o=>o.date===d).forEach(o=>players+=(o.players||[]).length);
+ dBookings.textContent=bs.length;dExpected.textContent=money(expected);dCollected.textContent=money(collected);dBalance.textContent=money(balance);
+ dPlayers.textContent=players;dReserved.textContent=reserved;dBookedSlots.textContent=bookedSlots;dUnpaid.textContent=unpaid;
+ const list=document.getElementById('todayList');
+ if(!bs.length&&!Object.values(db.openplays).some(o=>o.date===d)){list.innerHTML='<div class="empty">No bookings today.</div>';return}
+ let h='';
+ bs.forEach(b=>h+=`<div class="dayslot"><div class="tm">${time(b.start)}–${time(b.end)}</div><div class="slotmain"><b>${esc(b.name||'Unnamed customer')}</b><small>${bookingLabel(b)} ${b.notes?' • '+esc(b.notes):''}</small></div><button class="blue mini" onclick="editBooking('${b.id}')">EDIT</button></div>`);
+ list.innerHTML=h;
+}
+window.renderDashboard=renderDashboard;
+
+function setToday(){scheduleDate.value=today();renderSchedule()}
+function shiftDate(n){scheduleDate.value=dateAdd(scheduleDate.value||today(),n);renderSchedule()}
+window.setToday=setToday;window.shiftDate=shiftDate;
+function setScheduleView(v){scheduleView=v;dayViewBtn.classList.toggle('active',v==='day');weekViewBtn.classList.toggle('active',v==='week');renderSchedule()}
+window.setScheduleView=setScheduleView;
+
+function renderSchedule(){
+ const d=scheduleDate.value||today();scheduleDate.value=d;
+ scheduleHeading.textContent=scheduleView==='day'?fmtDate(d):`Week of ${fmtDate(d)}`;
+ if(scheduleView==='day'){daySchedule.style.display='block';weekSchedule.style.display='none';renderDay(d)}
+ else{daySchedule.style.display='none';weekSchedule.style.display='block';renderWeek(d)}
+}
+function slotHTML(date,h){
+ const b=bookingForSlot(date,h),o=openPlayForSlot(date,h);
+ if(b)return `<button class="slotbtn ${b.status}" onclick="editBooking('${b.id}')">${b.status.toUpperCase()}<small>${time(h)}–${time(h+1)}</small><small>${esc(b.name||'')}</small><small>${money(b.paid||0)} / ${money(b.due||0)}</small></button>`;
+ if(o)return `<button class="slotbtn open" onclick="selectOpenPlay('${o.id}')">OPEN PLAY<small>${time(h)}–${time(h+1)}</small><small>${(o.players||[]).length}/${o.capacity} players</small></button>`;
+ return `<button class="slotbtn" onclick="newBooking('${date}',${h})">AVAILABLE<small>${time(h)}–${time(h+1)}</small><small>Tap to book</small></button>`;
+}
+function renderDay(d){
+ let h='<div class="daylist">';
+ HOURS.forEach(hr=>{
+   const b=bookingForSlot(d,hr),o=openPlayForSlot(d,hr);
+   let body='';
+   if(b)body=`<b>${esc(b.name||'Unnamed customer')}</b><small>${bookingLabel(b)} • ${money(b.paid||0)} paid of ${money(b.due||0)} ${b.notes?' • '+esc(b.notes):''}</small>`;
+   else if(o)body=`<b>🏓 OPEN PLAY</b><small>${(o.players||[]).length}/${o.capacity} players • ${money((o.players||[]).length*(o.price||0))} expected</small>`;
+   else body='<b>AVAILABLE</b><small>Tap to create a booking</small>';
+   h+=`<div class="dayslot"><div class="tm">${time(hr)}<br>–<br>${time(hr+1)}</div><div class="slotmain">${body}</div><div class="actionrow">${b?`<button class="blue mini" onclick="editBooking('${b.id}')">EDIT</button>`:o?`<button class="green mini" onclick="selectOpenPlay('${o.id}')">OPEN</button>`:`<button class="green mini" onclick="newBooking('${d}',${hr})">BOOK</button>`}</div></div>`;
+ });
+ h+='</div>';daySchedule.innerHTML=h;
+}
+function monday(s){const d=new Date(s+'T00:00:00'),dow=d.getDay();d.setDate(d.getDate()-((dow+6)%7));return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function renderWeek(d){
+ const w=monday(d);let h='<div class="weekwrap"><table class="weektable"><thead><tr><th>TIME</th>';
+ for(let i=0;i<7;i++){const x=dateAdd(w,i);h+=`<th>${fmtShort(x)}</th>`}h+='</tr></thead><tbody>';
+ HOURS.forEach(hr=>{h+=`<tr><td class="time">${time(hr)}</td>`;for(let i=0;i<7;i++){const x=dateAdd(w,i);h+=`<td>${slotHTML(x,hr)}</td>`}h+='</tr>'});
+ h+='</tbody></table></div>';weekSchedule.innerHTML=h;
+}
+scheduleDate.addEventListener('change',renderSchedule);
+
+function populateTimeSelect(id){
+ const el=document.getElementById(id);el.innerHTML=HOURS.slice(0,-1).map(h=>`<option value="${h}">${time(h)}</option>`).join('');
+}
+function populateEndSelect(){
+ const el=document.getElementById('oEnd');el.innerHTML=HOURS.slice(1).map(h=>`<option value="${h}">${time(h)}</option>`).join('');
+}
+populateTimeSelect('bStart');populateTimeSelect('oStart');populateEndSelect();
+
+function newBooking(date=today(),start=6){
+ editingId=null;
+ bookingModalTitle.textContent='New Booking';deleteBookingBtn.style.display='none';
+ bDate.value=date;bStart.value=start;bDuration.value=1;bStatus.value='booked';bName.value='';bPhone.value='';
+ bRate.value=defaultRate(date,Number(start));bPaid.value=0;bMethod.value='Cash';bNotes.value='';
+ updateDue();bookingModalSub.textContent=`${fmtDate(date)} • ${time(start)}`;
+ bookingModal.classList.add('show');
+}
+window.newBooking=newBooking;
+function editBooking(id){
+ const b=db.bookings[id];if(!b)return;
+ editingId=id;bookingModalTitle.textContent='Edit Booking';deleteBookingBtn.style.display='inline-block';
+ bDate.value=b.date;bStart.value=b.start;bDuration.value=b.end-b.start;bStatus.value=b.status;bName.value=b.name||'';bPhone.value=b.phone||'';
+ bRate.value=b.rate||defaultRate(b.date,b.start);bDue.value=b.due||0;bPaid.value=b.paid||0;bMethod.value=b.method||'Cash';bNotes.value=b.notes||'';
+ updateDue();bookingModalSub.textContent=`${fmtDate(b.date)} • ${time(b.start)}–${time(b.end)} • ${b.ref}`;
+ bookingModal.classList.add('show');
+}
+window.editBooking=editBooking;
+function updateDue(){
+ const date=bDate.value||today(),start=Number(bStart.value||6),dur=Number(bDuration.value||1),rate=Number(bRate.value||0);
+ bDue.value=rate*dur;bBalance.textContent=money(Math.max(0,Number(bDue.value||0)-Number(bPaid.value||0)));
+}
+['bDate','bStart','bDuration','bRate','bPaid'].forEach(id=>document.getElementById(id).addEventListener('input',updateDue));
+function saveBooking(){
+ const date=bDate.value,start=Number(bStart.value),dur=Number(bDuration.value),end=start+dur;
+ if(!date||!bName.value.trim()){toast('Enter a date and customer name.');return}
+ if(end>22){toast('Booking cannot go past 10:00 PM.');return}
+ if(occupied(date,start,end,editingId)){toast('One or more selected hours are already occupied.');return}
+ const id=editingId||uid('BK'), old=db.bookings[id];
+ const b={id,ref:old?.ref||uid('PKD'),date,start,end,status:bStatus.value,name:bName.value.trim(),phone:bPhone.value.trim(),
+ rate:Number(bRate.value||0),due:Number(bDue.value||0),paid:Number(bPaid.value||0),method:bMethod.value,notes:bNotes.value.trim(),
+ created:old?.created||new Date().toISOString(),updated:new Date().toISOString()};
+ db.bookings[id]=b;
+ if(b.name)upsertCustomer(b.name,b.phone);
+ saveDB();closeModal('bookingModal');toast('Booking saved.');renderAll();
+}
+window.saveBooking=saveBooking;
+function deleteBooking(){
+ if(!editingId)return;if(!confirm('Delete this booking?'))return;
+ delete db.bookings[editingId];saveDB();closeModal('bookingModal');toast('Booking deleted.');renderAll();
+}
+window.deleteBooking=deleteBooking;
+
+function upsertCustomer(name,phone){
+ const key=name.toLowerCase().trim();let c=db.customers[key]||{id:uid('CU'),name,phone:'',created:new Date().toISOString()};
+ c.name=name;if(phone)c.phone=phone;c.updated=new Date().toISOString();db.customers[key]=c;
+}
+
+function newOpenPlay(){
+ oDate.value=today();oStart.value=17;oEnd.value=22;oCap.value=20;oPrice.value=db.settings.openPlayRate;oNotes.value='';openModal.classList.add('show');
+}
+window.newOpenPlay=newOpenPlay;
+function saveOpenPlay(){
+ const date=oDate.value,start=Number(oStart.value),end=Number(oEnd.value);
+ if(end<=start){toast('End time must be after start time.');return}
+ if(occupied(date,start,end)){toast('Those hours are already booked.');return}
+ if(Object.values(db.openplays).some(o=>o.date===date&&o.start<end&&o.end>start)){toast('An Open Play session overlaps another session.');return}
+ const id=uid('OP');db.openplays[id]={id,date,start,end,capacity:Number(oCap.value||20),price:Number(oPrice.value||0),notes:oNotes.value.trim(),players:[],created:new Date().toISOString()};
+ saveDB();closeModal('openModal');selectedOpenId=id;toast('Open Play created.');renderAll();showPage('openplay');
+}
+window.saveOpenPlay=saveOpenPlay;
+
+function renderOpenPlay(){
+ const sessions=Object.values(db.openplays).sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
+ openplayList.innerHTML=sessions.length?sessions.map(o=>`<div class="dayslot" style="margin-bottom:7px"><div class="tm">${fmtShort(o.date)}</div><div class="slotmain"><b>🏓 ${time(o.start)}–${time(o.end)}</b><small>${(o.players||[]).length}/${o.capacity} players • ${money((o.players||[]).length*o.price)}</small></div><button class="green mini" onclick="selectOpenPlay('${o.id}')">VIEW</button></div>`).join(''):'<div class="empty">No Open Play sessions yet.</div>';
+ if(selectedOpenId&&db.openplays[selectedOpenId])renderOpenDetail(selectedOpenId);else openplayDetail.innerHTML='<div class="empty">Select an Open Play session.</div>';
+}
+window.renderOpenPlay=renderOpenPlay;
+function selectOpenPlay(id){selectedOpenId=id;showPage('openplay')}
+window.selectOpenPlay=selectOpenPlay;
+function renderOpenDetail(id){
+ const o=db.openplays[id],players=o.players||[],expected=players.length*o.price,paid=players.reduce((s,p)=>s+Number(p.paid||0),0);
+ let h=`<h3>${fmtDate(o.date)} • ${time(o.start)}–${time(o.end)}</h3>
+ <div class="statline"><b>Players</b><span>${players.length}/${o.capacity}</span></div>
+ <div class="statline"><b>Expected</b><span>${money(expected)}</span></div>
+ <div class="statline"><b>Collected</b><span>${money(paid)}</span></div>
+ <div class="statline"><b>Balance</b><span>${money(Math.max(0,expected-paid))}</span></div>
+ <div class="progress" style="margin:9px 0"><div style="width:${Math.min(100,players.length/o.capacity*100)}%"></div></div>
+ <div class="actionrow no-print"><button class="green btn" onclick="addPlayer('${id}')">＋ Add Player</button><button class="red btn" onclick="deleteOpenPlay('${id}')">Delete Session</button></div>
+ <h3 style="margin-top:14px">Players</h3>`;
+ h+=players.length?players.map((p,i)=>`<div class="playerrow"><span><b>${esc(p.name)}</b><br><span class="smallmuted">${esc(p.phone||'')}</span></span><span>${money(p.paid)} / ${money(o.price)}</span><button class="red mini" onclick="removePlayer('${id}',${i})">×</button></div>`).join(''):'<div class="empty">No players added.</div>';
+ if(o.notes)h+=`<div class="notice" style="margin-top:10px">${esc(o.notes)}</div>`;
+ openplayDetail.innerHTML=h;
+}
+function addPlayer(id){
+ const o=db.openplays[id];if(!o)return;if((o.players||[]).length>=o.capacity){toast('This Open Play is full.');return}
+ selectedPlayerSession=id;pName.value='';pPhone.value='';pPaid.value=o.price;pMethod.value='Cash';playerSub.textContent=`${fmtDate(o.date)} • ${time(o.start)}–${time(o.end)} • ${money(o.price)} per player`;playerModal.classList.add('show');
+}
+window.addPlayer=addPlayer;
+function savePlayer(){
+ const o=db.openplays[selectedPlayerSession];if(!o||!pName.value.trim())return;
+ o.players.push({name:pName.value.trim(),phone:pPhone.value.trim(),paid:Number(pPaid.value||0),method:pMethod.value});
+ upsertCustomer(pName.value.trim(),pPhone.value.trim());saveDB();closeModal('playerModal');toast('Player added.');renderAll();
+}
+window.savePlayer=savePlayer;
+function removePlayer(id,i){if(!confirm('Remove this player?'))return;db.openplays[id].players.splice(i,1);saveDB();renderAll()}
+window.removePlayer=removePlayer;
+function deleteOpenPlay(id){if(!confirm('Delete this Open Play session and its player list?'))return;delete db.openplays[id];selectedOpenId=null;saveDB();renderAll()}
+window.deleteOpenPlay=deleteOpenPlay;
+
+function renderBookings(){
+ const filter=bookingFilter.value, q=bookingSearch.value.toLowerCase().trim();
+ let arr=allBookings().filter(b=>!q||b.name.toLowerCase().includes(q)||b.phone.toLowerCase().includes(q)||b.ref.toLowerCase().includes(q));
+ arr=arr.filter(b=>filter==='all'||(filter==='unpaid'&&paymentState(b)==='unpaid')||(filter==='partial'&&paymentState(b)==='partial')||(filter==='paid'&&paymentState(b)==='paid')||b.status===filter);
+ bookingTable.innerHTML='<thead><tr><th>Date</th><th>Time</th><th>Customer</th><th>Status</th><th>Due</th><th>Paid</th><th>Balance</th><th>Action</th></tr></thead><tbody>'+
+ (arr.length?arr.map(b=>`<tr><td>${fmtShort(b.date)}</td><td>${time(b.start)}–${time(b.end)}</td><td><b>${esc(b.name)}</b><br><span class="smallmuted">${esc(b.ref)}</span></td><td>${bookingLabel(b)}</td><td>${money(b.due)}</td><td>${money(b.paid)}</td><td><b>${money(Math.max(0,b.due-b.paid))}</b></td><td><button class="blue mini" onclick="editBooking('${b.id}')">EDIT</button></td></tr>`).join(''):'<tr><td colspan="8" class="empty">No matching bookings.</td></tr>')+'</tbody>';
+}
+
+function renderCustomers(){
+ const q=(customerSearch.value||'').toLowerCase().trim();
+ const cs=Object.values(db.customers).filter(c=>!q||c.name.toLowerCase().includes(q)||c.phone.toLowerCase().includes(q));
+ customerTable.innerHTML='<thead><tr><th>Customer</th><th>Phone</th><th>Bookings</th><th>Expected</th><th>Paid</th><th>Balance</th></tr></thead><tbody>'+
+ (cs.length?cs.map(c=>{const bs=allBookings().filter(b=>b.name.toLowerCase()===c.name.toLowerCase());const due=bs.reduce((s,b)=>s+Number(b.due||0),0),paid=bs.reduce((s,b)=>s+Number(b.paid||0),0);return `<tr><td><b>${esc(c.name)}</b></td><td>${esc(c.phone||'')}</td><td>${bs.length}</td><td>${money(due)}</td><td>${money(paid)}</td><td><b>${money(Math.max(0,due-paid))}</b></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">No customers found.</td></tr>')+'</tbody>';
+}
+
+function renderReports(){
+ const bs=allBookings(),expected=bs.reduce((s,b)=>s+Number(b.due||0),0),collected=bs.reduce((s,b)=>s+Number(b.paid||0),0);
+ rExpected.textContent=money(expected);rCollected.textContent=money(collected);rBalance.textContent=money(Math.max(0,expected-collected));rBookings.textContent=bs.length;
+ const counts={paid:0,partial:0,unpaid:0};bs.forEach(b=>counts[paymentState(b)]++);
+ paymentSummary.innerHTML=Object.entries(counts).map(([k,v])=>`<div class="statline"><span class="status ${paymentClass(k)}">${k.toUpperCase()}</span><b>${v}</b></div>`).join('');
+ const months={};bs.forEach(b=>{const m=b.date.slice(0,7);months[m]=(months[m]||0)+Number(b.paid||0)});
+ monthlySummary.innerHTML=Object.keys(months).sort().reverse().slice(0,12).map(m=>`<div class="statline"><b>${new Date(m+'-01T00:00:00').toLocaleDateString('en-US',{month:'long',year:'numeric'})}</b><span>${money(months[m])}</span></div>`).join('')||'<div class="empty">No payment data yet.</div>';
+}
+
+function renderAll(){renderDashboard();renderSchedule();renderBookings();renderOpenPlay();renderCustomers();renderReports()}
+
+function backupData(){
+ const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download=`PAKDOL_BACKUP_${today()}.json`;a.click();URL.revokeObjectURL(a.href);toast('Backup exported.');
+}
+window.backupData=backupData;
+function restoreData(e){
+ const file=e.target.files[0];if(!file)return;const r=new FileReader();
+ r.onload=()=>{try{const x=JSON.parse(r.result);if(!x||x.version!==2||!x.bookings||!x.openplays){throw new Error()}
+ if(confirm('Replace current Pakdol data with this backup?')){db=x;saveDB();renderAll();toast('Backup restored.')}}catch(err){alert('Invalid Pakdol backup file.')}e.target.value=''};
+ r.readAsText(file);
+}
+window.restoreData=restoreData;
+
+function printSchedule(){
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('print-page'));
+ const p=document.getElementById('schedule');p.classList.add('print-page');showPage('schedule');window.print();setTimeout(()=>p.classList.remove('print-page'),500)
+}
+window.printSchedule=printSchedule;
+function printBookings(){
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('print-page'));bookings.classList.add('print-page');window.print();setTimeout(()=>bookings.classList.remove('print-page'),500)
+}
+window.printBookings=printBookings;
+function printReports(){
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('print-page'));reports.classList.add('print-page');window.print();setTimeout(()=>reports.classList.remove('print-page'),500)
+}
+window.printReports=printReports;
+
+function saveScheduleImage(){
+ const d=scheduleDate.value||today(), W=1100,S=2,row=92,head=185,foot=55;
+ const items=[];
+ for(let h=6;h<=21;h++){const b=bookingForSlot(d,h),o=openPlayForSlot(d,h);if(b)items.push({h,status:b.status,name:b.name,sub:`${time(b.start)}–${time(b.end)} • ${money(b.paid)} / ${money(b.due)}`});else if(o)items.push({h,status:'open',name:'OPEN PLAY',sub:`${time(o.start)}–${time(o.end)} • ${(o.players||[]).length}/${o.capacity} players`})}
+ const H=Math.max(420,head+items.length*row+foot),c=document.createElement('canvas');c.width=W*S;c.height=H*S;const g=c.getContext('2d');g.scale(S,S);
+ g.fillStyle='#f5f7fb';g.fillRect(0,0,W,H);g.fillStyle='#073b82';g.fillRect(0,0,W,120);g.fillStyle='#fff';g.textAlign='center';g.font='bold 44px Arial';g.fillText('PAKDOL COURT',W/2,55);g.font='bold 23px Arial';g.fillText('DAILY SCHEDULE',W/2,93);
+ g.fillStyle='#ffd400';g.fillRect(45,138,W-90,47);g.fillStyle='#073b82';g.font='bold 23px Arial';g.fillText(fmtDate(d),W/2,169);
+ let y=208;const fill={open:'#d9f5df',reserved:'#fff1a8',booked:'#ffd6da'},border={open:'#25a34a',reserved:'#e0b900',booked:'#e51d2a'},tc={open:'#12672d',reserved:'#765900',booked:'#9b111a'};
+ items.forEach(x=>{g.fillStyle=fill[x.status];g.strokeStyle=border[x.status];g.lineWidth=3;g.beginPath();g.roundRect(55,y,W-110,70,10);g.fill();g.stroke();g.fillStyle=tc[x.status];g.textAlign='left';g.font='bold 21px Arial';g.fillText(x.name||x.status.toUpperCase(),78,y+28);g.font='bold 17px Arial';g.fillText(x.sub,W-520,y+28);g.fillText(time(x.h),78,y+54);y+=row});
+ g.fillStyle='#073b82';g.fillRect(45,H-foot-5,W-90,40);g.fillStyle='#fff';g.textAlign='center';g.font='bold 16px Arial';g.fillText('PAKDOL COURT • pakdol court manager',W/2,H-foot+21);
+ const a=document.createElement('a');a.download=`Pakdol-Schedule-${d}.png`;a.href=c.toDataURL('image/png');a.click();
+}
+window.saveScheduleImage=saveScheduleImage;
+
+function saveWeeklyScheduleImage(){
+  const d=scheduleDate.value||today(), w=monday(d), W=1600, S=2, timeW=125, dayW=(W-timeW)/7, rowH=76, head=150, foot=55;
+  const H=head+HOURS.length*rowH+foot;
+  const c=document.createElement('canvas');c.width=W*S;c.height=H*S;
+  const g=c.getContext('2d');g.scale(S,S);
+
+  g.fillStyle='#f5f7fb';g.fillRect(0,0,W,H);
+  g.fillStyle='#073b82';g.fillRect(0,0,W,105);
+  g.fillStyle='#fff';g.textAlign='center';
+  g.font='bold 40px Arial';g.fillText('PAKDOL COURT',W/2,45);
+  g.font='bold 21px Arial';g.fillText('WEEKLY SCHEDULE',W/2,80);
+
+  const gridY=120;
+  g.fillStyle='#ffd400';g.fillRect(25,gridY,W-50,48);
+  g.fillStyle='#073b82';g.font='bold 19px Arial';
+  g.fillText(`Week of ${fmtDate(w)}`,W/2,gridY+31);
+
+  const tableY=gridY+58;
+  g.fillStyle='#073b82';g.fillRect(25,tableY,timeW,42);
+  g.fillStyle='#fff';g.font='bold 15px Arial';g.fillText('TIME',25+timeW/2,tableY+27);
+
+  for(let i=0;i<7;i++){
+    const x=25+timeW+i*dayW, date=dateAdd(w,i);
+    g.fillStyle='#073b82';g.fillRect(x,tableY,dayW-2,42);
+    g.fillStyle='#fff';g.font='bold 14px Arial';
+    g.fillText(fmtShort(date),x+(dayW-2)/2,tableY+27);
+  }
+
+  const fill={open:'#d9f5df',reserved:'#fff1a8',booked:'#ffd6da'};
+  const border={open:'#25a34a',reserved:'#e0b900',booked:'#e51d2a'};
+  const tc={open:'#12672d',reserved:'#765900',booked:'#9b111a'};
+
+  HOURS.forEach((hr,ri)=>{
+    const y=tableY+42+ri*rowH;
+    g.fillStyle='#e9eff7';g.fillRect(25,y,timeW-2,rowH-3);
+    g.fillStyle='#073b82';g.textAlign='center';g.font='bold 14px Arial';
+    g.fillText(time(hr),25+(timeW-2)/2,y+rowH/2+5);
+
+    for(let i=0;i<7;i++){
+      const x=25+timeW+i*dayW, date=dateAdd(w,i);
+      g.fillStyle='#fff';g.fillRect(x,y,dayW-2,rowH-3);
+
+      const b=bookingForSlot(date,hr), o=openPlayForSlot(date,hr);
+      if(b||o){
+        const status=b?b.status:'open';
+        g.fillStyle=fill[status];g.strokeStyle=border[status];g.lineWidth=2;
+        g.beginPath();g.roundRect(x+5,y+5,dayW-12,rowH-13,7);g.fill();g.stroke();
+        g.fillStyle=tc[status];g.textAlign='center';g.font='bold 13px Arial';
+        const name=b?(b.name||'BOOKED'):'OPEN PLAY';
+        g.fillText(name.length>22?name.slice(0,21)+'…':name,x+dayW/2,y+25);
+        g.font='bold 11px Arial';
+        g.fillText(b?`${time(b.start)}–${time(b.end)}`:`${time(o.start)}–${time(o.end)}`,x+dayW/2,y+43);
+        if(b){
+          g.font='bold 10px Arial';
+          g.fillText(`${money(b.paid||0)} / ${money(b.due||0)}`,x+dayW/2,y+58);
+        }else{
+          g.font='bold 10px Arial';
+          g.fillText(`${(o.players||[]).length}/${o.capacity} players`,x+dayW/2,y+58);
+        }
+      }else{
+        g.fillStyle='#60708a';g.textAlign='center';g.font='bold 11px Arial';
+        g.fillText('AVAILABLE',x+dayW/2,y+31);
+        g.font='10px Arial';g.fillText('Tap to book',x+dayW/2,y+48);
+      }
+    }
+  });
+
+  g.fillStyle='#073b82';g.fillRect(25,H-foot-5,W-50,40);
+  g.fillStyle='#fff';g.textAlign='center';g.font='bold 15px Arial';
+  g.fillText('PAKDOL COURT • pakdol court manager',W/2,H-foot+21);
+
+  const a=document.createElement('a');
+  a.download=`Pakdol-Weekly-Schedule-${w}.png`;
+  a.href=c.toDataURL('image/png');a.click();
+  toast('Weekly schedule image saved.');
+}
+window.saveWeeklyScheduleImage=saveWeeklyScheduleImage;
+
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+
+scheduleDate.value=today();
+renderAll();
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>

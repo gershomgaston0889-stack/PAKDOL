@@ -1,0 +1,23 @@
+PAKDOL COURT MANAGER — PWA SETUP
+
+The original HTML app is preserved. Only PWA installation support was added.
+
+Files:
+- index.html
+- manifest.json
+- sw.js
+- icon-192.png
+- icon-512.png
+
+Your existing bookings are stored in browser localStorage under "pakdol_manager_v2".
+The HTML file itself does not contain those bookings. Use the app's Export Backup before switching
+to a new browser/origin, and keep the JSON backup safe.
+
+To install:
+1. Host these files together on an HTTPS website (GitHub Pages or Cloudflare Pages can be free).
+2. Open the HTTPS address in Chrome on your Xiaomi 15T Pro.
+3. Choose Install app / Add to Home screen.
+4. The Pakdol Court icon will appear on the home screen.
+
+A local file (file://) generally cannot be installed as a full PWA because service workers require
+a secure origin such as HTTPS.
